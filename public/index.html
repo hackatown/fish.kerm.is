@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 
 <head>
-    <title>Kerm.is</title>
+    <title>HackaTone</title>
+    <style>
+    #swipe_anim{
+        -webkit-transition: -webkit-transform 0.1s ease-in; /* Changed here */
+        -moz-transition: -moz-transform 0.1s ease-in;
+        -o-transition: -o-transform 0.1s ease-in;
+        transition: transform 0.1s ease-in;
+    }
+    </style>
 </head>
 
 <body style='margin: 0px; background-color: #bbbbbb; overflow: hidden;'>
 
     <div style="opacity:0.4; position: absolute; top:0;right:0;padding:5px;background-white;z-index: 100; height: 100px; color: white; font-family: helvetica" class="debug">
     </div>
-    <div style="display: none;position: absolute; top:80px;left:0px;padding:5px;background-white;z-index: 100; height: 100px; color: white; font-family: helvetica" class="instruct">Go to <span class="urlFounded">this website</span>/connect.html on your iPhone and enter the following code: <span class='roomGenerated'>...</span>
+    <div style="display: none;position: absolute; top:-999999980px;left:0px;padding:5px;background-white;z-index: 100; height: 100px; color: white; font-family: helvetica" class="instruct">Go to <span class="urlFounded">this website</span>/connect.html on your iPhone and enter the following code: <span class='roomGenerated'>...</span>
     </div>
 
-    <!-- <div id="xx" style="width: 200px; height:200px; background: red;"></div> -->
+    <canvas id="canvas" style="background-color:transparent; z-index: 10;" width="2000" height="2000"></canvas>
+    <div id="swipe_anim" style="width:50%; position:absolute; height:10px; background-color:black; top:50%; left:25%; z-index:5000;"></div>
+    <div style='width:0%; height:100%; position:absolute; bottom:0px; left:0px;background-color:#EFEFEF; opacity:0.5;' id='bass_balk'></div>
 
-    <canvas id="canvas" style="z-index: 10; display:none;"></canvas>
-    <div id="container"></div>
+
+    <div class="konami" style="display : none; position:absolute;  top:0px; width:100%; height:100%; z-index:444"><iframe width="100%" height="100%" src="//www.youtube.com/embed/pjWb0fVC1nc?rel=0&controls=0" frameborder="0" allowfullscreen></iframe></div>
 
 	<!-- Three.js stuff -->
     <script src='js/three.min.js'></script>
@@ -24,6 +34,13 @@
     <script src="js/TrackballControls.js"></script>
     <script src="js/stats.min.js"></script>
 
+    <script src="js/konami.js"></script>
+
+<script src="http://code.createjs.com/easeljs-0.5.0.min.js"></script>
+<script src="http://code.createjs.com/tweenjs-0.3.0.min.js"></script>
+<script src="http://code.createjs.com/movieclip-0.5.0.min.js"></script>
+    <script src="js/circle.js"></script>
+
     <!-- Socket stuff -->
     <script src="/js/socket.io.min.js"></script>
     <!-- <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script> -->
@@ -31,6 +48,112 @@
 	<!-- jQuery & Leap Stuff -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="//js.leapmotion.com/leap-0.4.2.min.js"></script>
-    <script src="js/leapController.js"></script>
+    <!-- <script src="js/leapController.js"></script> -->
     <script src="js/main.js"></script>
+
+    <script>
+        var canvas, stage, exportRoot, context;
+       canvas = document.getElementById("canvas");
+    context = canvas.getContext('2d');
+       stage = new createjs.Stage(canvas);
+
+        var circles = [];
+        var circleTimeout;
+
+        socket.on('shake_anim', function()
+        {
+
+            clearCircles();
+
+            ///
+
+            exportRoot = new lib.circle();
+            exportRoot.instance.x = Math.random() * 1920;
+            exportRoot.instance.y = Math.random() * 1080;
+            exportRoot.instance.scaleX = exportRoot.instance.scaleY =  0.5 + 3 * Math.random();
+            exportRoot.instance.alpha = 0.5 + Math.random() * 0.5;
+
+            console.log(stage);
+
+            circles.push( exportRoot );
+
+            stage.addChild(exportRoot);
+            stage.update();
+
+            createjs.Ticker.setFPS(41);
+            createjs.Ticker.addListener(stage);
+
+            if( circleTimeout )
+            {
+                clearTimeout( circleTimeout );
+            }
+            circleTimeout = setTimeout( function()
+            {
+                clearCircles();
+            }, 1000 );
+
+        });
+
+        function clearCircles()
+        {
+            while( circles.length > 0 )
+            {
+                var c = circles.pop();
+                stage.removeChild( c );
+                stage.update();
+            }
+        }
+
+        socket.on('tap_anim', function()
+        {
+            console.log('tap');
+
+            var clr = getRandomColor();
+            $('body').css({
+                backgroundColor: clr
+            });
+
+
+
+        });
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.round(Math.random() * 15)];
+            }
+            return color;
+        }
+
+        var rot=0;
+         socket.on('swipe_anim', function()
+        {
+            console.log('swipe');
+
+            rot += 30;
+
+            $('#swipe_anim').css('transform','rotate('+rot+'deg)')
+        });
+
+        socket.on('rotate_anim', function(percentage)
+        {
+            console.log('rotate');
+
+            $('#bass_balk').css({
+                width: 100 * percentage + '%'
+            });
+
+        });
+
+        var easter_egg = new Konami(function() {
+
+            console.log('konami');
+            $('.konami').find('iframe').attr('src', '//www.youtube.com/embed/pjWb0fVC1nc?rel=0&controls=0&autoplay=1');
+            $('.konami').fadeIn(50);
+
+        });
+
+
+
+    </script>
 </body>

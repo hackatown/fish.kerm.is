@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" id="test_el">
 
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,7 @@
 
     <style type="text/css">
     body, html {
+        position: fixed;
         margin:0;
         padding: 0;
         width: 100%;
@@ -31,12 +32,12 @@
         margin-left: 5%;
         padding: 20px;
     }
-    .x2{
+    .x2, .x3{
         color: white;
         text-shadow: 0px 0px 2px #000;
         font-size: 3rem;
     }
-    .a{
+    .x3{
         display: none;
     }
     </style>
@@ -47,11 +48,22 @@
         <div class="x a"></div>
         <br>
         <div class="x2">Not Connected</div>
-        <br>
-        <div class="x3 a"></div>
+        <div class="x3 a instructions"></div>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="/js/socket.io.min.js"></script>
+    <script src="/js/hammer.js"></script>
+    <script src="js/shake.js"></script>
+      <script src="js/tap.js"></script>
+      <script src="js/swipe.js"></script>
+
+      <script src="js/kick.js"></script>
+
+      <script src="http://code.createjs.com/easeljs-0.5.0.min.js"></script>
+<script src="http://code.createjs.com/tweenjs-0.3.0.min.js"></script>
+<script src="http://code.createjs.com/movieclip-0.5.0.min.js"></script>
+    <script src="js/circle.js"></script>
+
     <script>
     // var socket = io.connect('http://192.168.1.13:3000');
     var currentURL = window.location.href;
@@ -68,8 +80,37 @@
 
     var motionD;
 
+
+
     $(function() {
         $('body').css('background', getRandomColor());
+
+        console.log('room', room);
+
+        switch(room)
+       {
+        case 'percussie' :
+            window.addEventListener('shake', shakeEventDidOccur, false);
+            $('.x3').html('Shake!');
+
+                break;
+        case 'bass' :
+
+                   window.addEventListener('deviceorientation', deviceMotionHandler, false);
+                   $('.x3').html('Bass-kick! (rotate your phone)');
+
+            break;
+        case 'kick' :
+                var element = document.getElementById('test_el');
+                var hammertime = Hammer(element).on("tap", tapEventDidOccur);
+                $('.x3').html('Tap!');
+            break;
+        case 'melodie' :
+                var element = document.getElementById('test_el');
+                var hammertime = Hammer(element).on("swipe", swipeEventDidOccur);
+                $('.x3').html('Swipe!');
+            break;
+       }
 
 
         socket.on('connect', function() {
@@ -80,47 +121,16 @@
             });
 
             $('.x2').html("Connected to " + room);
+            $('.x2').hide();
+            $('.x3').show();
         });
 
         socket.on('message', function(data) {
             console.log('Incoming message:', data.msg);
         });
-
-        socket.on('motionDataOut', function(data) {
-            console.log('Incoming message:', data);
-            $('.x2').html(data.motion)
-        });
-
-        // socket.emit('message', {msg: 'emit-test'})
-
-        if (window.DeviceOrientationEvent) {
-            $('.x').html("DeviceOrientation is supported");
-            window.addEventListener('deviceorientation', handleMotion, false);
-        } else {
-            $('.x').html("Motion Control is not supported in this browser");
-        }
-
-        function handleMotion(event) {
-            $('.x').html('gamma: ' + event.gamma + ' <br>beta:' + event.beta + ' <br> alpha:' + event.alpha);
-
-            motionD = {
-                gamma: event.gamma,
-                beta: event.beta,
-                alpha: event.alpha
-            }
-            // socket.emit('message', {
-            //     msg: event,
-            // })
-
-        }
-
     })
 
-    setInterval(function() {
-        socket.emit('motionData', motionD)
-        // socket.emit('message', motionD)
-        $('.x3').html('motion data: ', motionD)
-    }, 200)
+
 
     /////// to get room from URL //////////
 
@@ -141,6 +151,8 @@
         }
         return color;
     }
+
+
     </script>
 
 </body>

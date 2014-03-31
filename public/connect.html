@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <title>Kerm.is Connect</title>
 
-    <meta name="viewport" content="initial-scale=1, user-scalable=no">
-
+<!--     <meta name="viewport" content="initial-scale=1, user-scalable=no">
+ -->
 
     <style type="text/css">
+
+
     body, html {
         margin:0;
         padding: 0;
@@ -42,6 +44,26 @@
         border: none;
         color:white;
     }
+    a{
+        text-decoration: none;
+        display: block;
+        width: 90%;
+        margin: 5%;
+        float: left;
+        color: white;
+        text-align: center;
+        padding: 50px 0 50px 0;
+        background: #0E0E0E;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 2em;
+        /*border: solid hotpink 10px;*/
+        /*font-family: "comic sans ms";*/
+        border-radius: 1px;
+    }
+    a:hover{
+        /*border-color: lime;*/
+    }
     </style>
 
 </head>
@@ -49,17 +71,16 @@
 <body>
 
     <div id="wrap">
-        <form action="mobile.html">
-            <input type="text" id="roomNumber" name="roomNumber" autofocus>
-            <br>
-            <br>
-            <br>
-            <button id="roomConnect" type="submit">Connect</button>
-        </form>
+    <br><br><br><br><br>
+        <a href="mobile.html?roomNumber=percussie" class="sound">Percussie</a>
+        <a href="mobile.html?roomNumber=kick" class="sound">Kick</a>
+        <a href="mobile.html?roomNumber=bass" class="sound">Bass</a>
+        <a href="mobile.html?roomNumber=melodie" class="sound">Melodie</a>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="js/main.js"></script>
         <script>
         $(function(){
-        	$('body').css('background',getRandomColor());
+            $('body').css('background',getRandomColor());
         })
         function getRandomColor() {
             var letters = '0123456789ABCDEF'.split('');

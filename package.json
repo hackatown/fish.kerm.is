@@ -8,6 +8,7 @@
     "socket.io": "0.9",
     "http": "0.0.0",
     "sockjs": "~0.3.8",
-    "node-static": "~0.7.3"
+    "node-static": "~0.7.3",
+    "node-osc": "^0.2.1"
   }
 }
